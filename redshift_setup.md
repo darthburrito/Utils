@@ -17,7 +17,6 @@ CREATE GROUP read_only_dynamic;
 GRANT SELECT ON ALL TABLES IN SCHEMA dynamic to group read_only_dynamic;
 GRANT USAGE ON  SCHEMA dynamic to group read_only_dynamic;
 END;
-
 ```
 Creating a read write group with no ability to create or alter tables for in schema(dynamic)
 ```sql
@@ -42,28 +41,23 @@ END;
 
 Creating a read only user
 ```sql
-
 BEGIN;
 -- create user
 CREATE USER read_only_user WITH password 'ReadOnly1';
 -- add to group(s)
 ALTER
 GROUP read_only_dynamic ADD USER read_only_user;
-
 ```
 
 Creating a read write user
 ```sql
-
 BEGIN;
 -- create user
 CREATE USER read_write_user WITH password 'ReadOnly1';
 -- add to group(s)
 ALTER
 GROUP read_write_dynamic ADD USER read_write_user;
-
 END;
-
 ```
 Creating a read write user
 ```sql
@@ -79,14 +73,18 @@ ALTER DEFAULT PRIVILEGES
 FOR USER create_table_user IN SCHEMA DYNAMIC GRANT
 SELECT ON TABLES TO
 GROUP read_only_dynamic;
-
 ALTER DEFAULT PRIVILEGES
 FOR USER create_table_user IN SCHEMA DYNAMIC GRANT ALL ON TABLES TO
 GROUP read_write_dynamic;
-
 ALTER DEFAULT PRIVILEGES
 FOR USER create_table_user IN SCHEMA DYNAMIC GRANT ALL ON TABLES TO
 GROUP create_tables_dynamic;
 END;
-
 ```
+
+
+References
+--------- 
+http://docs.aws.amazon.com/redshift/latest/dg/t_user_group_examples.html
+http://docs.aws.amazon.com/redshift/latest/dg/r_GRANT.html
+http://docs.aws.amazon.com/redshift/latest/dg/r_REVOKE.html
