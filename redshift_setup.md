@@ -8,34 +8,34 @@ END;
 
 Create a schema for dynamic pricing
 ```sql
-create schema dynamic;
+create schema myschema;
 ```
-Creating a read only group for a schema (dynamic)
+Creating a read only group for a schema (myschema)
 ```sql
 BEGIN;
-CREATE GROUP read_only_dynamic;
-GRANT SELECT ON ALL TABLES IN SCHEMA dynamic to group read_only_dynamic;
-GRANT USAGE ON  SCHEMA dynamic to group read_only_dynamic;
+CREATE GROUP read_only_myschema;
+GRANT SELECT ON ALL TABLES IN SCHEMA myschema to group read_only_myschema;
+GRANT USAGE ON  SCHEMA myschema to group read_only_myschema;
 END;
 ```
-Creating a read write group with no ability to create or alter tables for in schema(dynamic)
+Creating a read write group with no ability to create or alter tables for in schema(myschema)
 ```sql
 BEGIN;
-CREATE GROUP read_write_dynamic;
-GRANT SELECT ON ALL TABLES IN SCHEMA dynamic to group read_only_dynamic;
-GRANT USAGE ON  SCHEMA dynamic to group read_only_dynamic;
-GRANT INSERT ON ALL TABLES IN SCHEMA dynamic to group read_write_dynamic;
-GRANT UPDATE ON ALL TABLES IN SCHEMA dynamic to group read_write_dynamic;
-GRANT DELETE ON ALL TABLES IN SCHEMA dynamic to group read_write_dynamic;
+CREATE GROUP read_write_myschema;
+GRANT SELECT ON ALL TABLES IN SCHEMA myschema to group read_only_myschema;
+GRANT USAGE ON  SCHEMA myschema to group read_only_myschema;
+GRANT INSERT ON ALL TABLES IN SCHEMA myschema to group read_write_myschema;
+GRANT UPDATE ON ALL TABLES IN SCHEMA myschema to group read_write_myschema;
+GRANT DELETE ON ALL TABLES IN SCHEMA myschema to group read_write_myschema;
 END;
 ```
-CREATE GROUP create_tables_dynamic;
+CREATE GROUP create_tables_myschema;
 ```sql
 BEGIN;
-CREATE GROUP create_tables_dynamic;
-GRANT USAGE ON  SCHEMA dynamic to group read_only_dynamic;
-GRANT ALL ON ALL TABLES IN SCHEMA dynamic to group read_write_dynamic;
-GRANT CREATE ON  SCHEMA dynamic to group create_tables_dynamic;
+CREATE GROUP create_tables_myschema;
+GRANT USAGE ON  SCHEMA myschema to group read_only_myschema;
+GRANT ALL ON ALL TABLES IN SCHEMA myschema to group read_write_myschema;
+GRANT CREATE ON  SCHEMA myschema to group create_tables_myschema;
 END;
 ```
 
@@ -46,7 +46,7 @@ BEGIN;
 CREATE USER read_only_user WITH password 'ReadOnly1';
 -- add to group(s)
 ALTER
-GROUP read_only_dynamic ADD USER read_only_user;
+GROUP read_only_myschema ADD USER read_only_user;
 ```
 
 Creating a read write user
@@ -56,7 +56,7 @@ BEGIN;
 CREATE USER read_write_user WITH password 'ReadOnly1';
 -- add to group(s)
 ALTER
-GROUP read_write_dynamic ADD USER read_write_user;
+GROUP read_write_myschema ADD USER read_write_user;
 END;
 ```
 Creating a read write user
@@ -67,24 +67,24 @@ BEGIN;
 CREATE USER create_table_user WITH password 'ReadOnly1';
 -- add to group(s)
 ALTER
-GROUP create_tables_dynamic ADD USER create_table_user;
+GROUP create_tables_myschema ADD USER create_table_user;
 -- alter PRIVILEGES so new objects created by this user can be read and writen by other groups
 ALTER DEFAULT PRIVILEGES
-FOR USER create_table_user IN SCHEMA DYNAMIC GRANT
+FOR USER create_table_user IN SCHEMA myschema GRANT
 SELECT ON TABLES TO
-GROUP read_only_dynamic;
+GROUP read_only_myschema;
 ALTER DEFAULT PRIVILEGES
-FOR USER create_table_user IN SCHEMA DYNAMIC GRANT ALL ON TABLES TO
-GROUP read_write_dynamic;
+FOR USER create_table_user IN SCHEMA myschema GRANT ALL ON TABLES TO
+GROUP read_write_myschema;
 ALTER DEFAULT PRIVILEGES
-FOR USER create_table_user IN SCHEMA DYNAMIC GRANT ALL ON TABLES TO
-GROUP create_tables_dynamic;
+FOR USER create_table_user IN SCHEMA myschema GRANT ALL ON TABLES TO
+GROUP create_tables_myschema;
 END;
 ```
 
 
 References
---------- 
+---------
 http://docs.aws.amazon.com/redshift/latest/dg/t_user_group_examples.html
 http://docs.aws.amazon.com/redshift/latest/dg/r_GRANT.html
 http://docs.aws.amazon.com/redshift/latest/dg/r_REVOKE.html
